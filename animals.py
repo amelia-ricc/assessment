@@ -5,11 +5,21 @@ from tabulate import tabulate
 # This is the filename of the database to be used
 DB_NAME = 'animals.db'
 # This is the SQL to connect to all the tables in the database
-TABLES = ("spca_animals"
-          "LEFT JOIN diff_animals ON spca_animals.animal_id = diff_animals.animal_id"
-          "LEFT JOIN location ON spca_animals.location_id = location.location_id"
-          "LEFT JOIN animal_gender ON spca_animals.animal_sex_id = animal_gender.animal_sex_id"
-          "LEFT JOIN animal_colour ON spca_animals.colour_id = animal_colour.colour_id")
+TABLES = ("spca_animals "
+          "LEFT JOIN diff_animals ON spca_animals.animal_id = diff_animals.animal_id "
+          "LEFT JOIN location ON spca_animals.location_id = location.location_id "
+          "LEFT JOIN animal_gender ON spca_animals.animal_sex_id = animal_gender.animal_sex_id "
+          "LEFT JOIN animal_colour ON spca_animals.colour_id = animal_colour.colour_id ")
+
+def print_parameter_query(fields:str, where:str, parameter):
+    """ Prints the results for a parameter query in tabular form. """
+    db = sqlite3.connect(DB_NAME)
+    cursor = db.cursor()
+    sql = ("SELECT " + fields + " FROM " + TABLES + " WHERE " + where)
+    cursor.execute(sql,(parameter,))
+    results = cursor.fetchall()
+    print(tabulate(results,fields.split(",")))
+    db.close
 
 def print_query(view_name:str):
     ''' Prints the specified view from the database in a table '''
@@ -27,6 +37,7 @@ def print_query(view_name:str):
     # Print the results in a table with the headings
     print(tabulate(results,headings))
     db.close()
+
 
 menu_choice =''
 while menu_choice != 'Z':
@@ -49,6 +60,8 @@ while menu_choice != 'Z':
                         'O: Small young family pet in Masterton\n'
                         'P: South Island pets under $150 only\n'
                         'Q: Tabby or Tuxedo cats\n'
+                        'R: Select all animals of a certain type\n'
+                        'S: Select all animals that are located in a certain city\n'
                         'Z: Exit\n\nType option here: ')
     menu_choice = menu_choice.upper()
     if menu_choice == 'A':
@@ -85,3 +98,9 @@ while menu_choice != 'Z':
         print_query('South Island pets under $150 only')
     elif menu_choice == 'Q':
         print_query('Tabby or Tuxedo cats')
+    elif menu_choice == 'R':
+        animal = input('What type of animal do you want to see: ')
+        print_parameter_query("animal, age_in_years, adoption_fee_dollars, location", "animal = ? ORDER BY age_in_years ASC",animal)
+    elif menu_choice == 'S':
+        location = input('What city do you want to see animals from: ')
+        print_parameter_query("animal, age_in_years, adoption_fee_dollars, location, name", "location = ? ORDER BY adoption_fee_dollars DESC", location)
