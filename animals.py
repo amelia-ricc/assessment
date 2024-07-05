@@ -62,6 +62,8 @@ while menu_choice != 'Z':
                         'Q: Tabby or Tuxedo cats\n'
                         'R: Select all animals of a certain type\n'
                         'S: Select all animals that are located in a certain city\n'
+                        'T: Select all animals of a certain breed\n'
+                        'U: Select all animals of a certain colour\n'
                         'Z: Exit\n\nType option here: ')
     menu_choice = menu_choice.upper()
     if menu_choice == 'A':
@@ -104,3 +106,9 @@ while menu_choice != 'Z':
     elif menu_choice == 'S':
         location = input('What city do you want to see animals from: ')
         print_parameter_query("animal, age_in_years, adoption_fee_dollars, location, name", "location = ? ORDER BY adoption_fee_dollars DESC", location)
+    elif menu_choice == 'T':
+        breed = input('What breed of animal do you want to see: ')
+        print_parameter_query("name, animal, fur_length, breed, colour, pattern", "breed = ?", breed)
+    elif menu_choice == 'U':
+        colour = input('What colour of animals do you want to see: ')
+        print_parameter_query("animal, name, age_in_years, breed, colour", "colour = ?", colour)
